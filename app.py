@@ -1,7 +1,22 @@
-from dotenv import load_dotenv
 import os
+from dotenv import load_dotenv
+from openai import AzureOpenAI
 
-load_dotenv()  # loads from .env file
-azure_api_key = os.getenv("AZURE_API_KEY")
+load_dotenv()
 
-print("Loaded Azure API Key:", azure_api_key[:5] + "..." if azure_api_key else "Not found")
+client = AzureOpenAI(
+    api_key=os.getenv("AZURE_OPENAI_API_KEY"),
+    azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
+    api_version=os.getenv("AZURE_OPENAI_API_VERSION"),
+)
+
+response = client.chat.completions.create(
+    model=os.getenv("AZURE_OPENAI_DEPLOYMENT"),
+    messages=[
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "user", "content": "List 3 fun facts about AI."},
+    ]
+)
+
+print(response.choices[0].message.content)
+    
